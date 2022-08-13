@@ -37,7 +37,6 @@ public class MainController {
 
     @GetMapping("/random")
     public int random(){
-
         return new Random().nextInt(10);
     }
 

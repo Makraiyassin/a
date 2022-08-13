@@ -1,6 +1,7 @@
 package be.digitalcity.exojwt.config;
 
 
+import be.digitalcity.exojwt.filters.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,13 +19,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter authFilter) throws Exception {
 
         http.csrf().disable();
+
+        http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/user/**").permitAll()
+                .antMatchers("/random").hasAnyRole("ADMIN","USER")
                 .anyRequest().authenticated();
 
         return http.build();
